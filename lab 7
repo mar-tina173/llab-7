@@ -1,0 +1,134 @@
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+
+using namespace std;
+
+// Tamaño del primer mapa
+const int MAP_SIZE = 14;
+// Tamaño del segundo mapa
+const int MAP_SIZE_LARGE = 28;
+// Símbolos del juego
+const char WALL = '#';
+const char PLAYER = '@';
+const char ENEMY = 'E';
+const char TREASURE = 'T';
+const char EMPTY = ' ';
+// Salud del jugador
+int playerHealth = 100;
+// Posición del jugador
+int playerX, playerY;
+// Mapa de juego
+vector<vector<char>> map;
+// Mapa ampliado para el segundo nivel
+vector<vector<char>> largeMap;
+
+// Función para inicializar el mapa
+void initMap(int size) {
+    map.resize(size, vector<char>(size, EMPTY));
+
+    // Crear paredes en los bordes
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            if (i == 0 || i == size - 1 || j == 0 || j == size - 1) {
+                map[i][j] = WALL;
+            }
+        }
+    }
+}
+
+// Función para inicializar enemigos en el mapa
+void placeEnemies(int numEnemies) {
+    srand(time(0)); // Para generar posiciones aleatorias
+    for (int i = 0; i < numEnemies; i++) {
+        int ex, ey;
+        do {
+            ex = rand() % (MAP_SIZE - 2) + 1;
+            ey = rand() % (MAP_SIZE - 2) + 1;
+        } while (map[ex][ey] != EMPTY); // Asegurar que no haya superposición
+        map[ex][ey] = ENEMY;
+    }
+}
+
+// Función para inicializar el tesoro
+void placeTreasure() {
+    int tx, ty;
+    do {
+        tx = rand() % (MAP_SIZE - 2) + 1;
+        ty = rand() % (MAP_SIZE - 2) + 1;
+    } while (map[tx][ty] != EMPTY); // Evitar superposición
+    map[tx][ty] = TREASURE;
+}
+
+// Función para renderizar el mapa
+void renderMap() {
+    system("clear"); // Limpiar pantalla (en Windows usar "cls")
+    for (int i = 0; i < map.size(); i++) {
+        for (int j = 0; j < map[i].size(); j++) {
+            cout << map[i][j];
+        }
+        cout << endl;
+    }
+    cout << "Salud del jugador: " << playerHealth << endl;
+}
+
+// Función para manejar el movimiento del jugador
+void movePlayer(char direction) {
+    int newX = playerX, newY = playerY;
+
+    // Definir nueva posición dependiendo de la dirección
+    if (direction == 'W' || direction == 'w') newX--;
+    else if (direction == 'S' || direction == 's') newX++;
+    else if (direction == 'A' || direction == 'a') newY--;
+    else if (direction == 'D' || direction == 'd') newY++;
+
+    // Verificar si la nueva posición es válida
+    if (map[newX][newY] == WALL) {
+        cout << "No puedes moverte, hay una pared." << endl;
+        return;
+    }
+    else if (map[newX][newY] == ENEMY) {
+        cout << "¡Has encontrado un enemigo!" << endl;
+        playerHealth -= 10;
+        if (playerHealth <= 0) {
+            cout << "¡Has muerto! Fin del juego." << endl;
+            exit(0); // Termina el juego
+        }
+    }
+    else if (map[newX][newY] == TREASURE) {
+        cout << "¡Has encontrado el tesoro!" << endl;
+        // Avanza al segundo mapa o termina el juego
+        // Aquí podrías cargar el segundo mapa más grande
+        exit(0); // Por ahora, terminamos el juego
+    }
+
+    // Actualizar posición del jugador
+    map[playerX][playerY] = EMPTY;
+    playerX = newX;
+    playerY = newY;
+    map[playerX][playerY] = PLAYER;
+}
+
+int main() {
+    // Inicializar el mapa y las posiciones iniciales
+    initMap(MAP_SIZE);
+    placeEnemies(10);
+    placeTreasure();
+
+    // Posicionar al jugador
+    playerX = 1;
+    playerY = 1;
+    map[playerX][playerY] = PLAYER;
+
+    // Bucle principal del juego
+    while (true) {
+        renderMap();
+        char move;
+        cout << "Mueve el jugador (WASD): ";
+        cin >> move;
+        movePlayer(move);
+    }
+
+    return 0;
+}
