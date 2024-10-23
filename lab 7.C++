@@ -14,19 +14,19 @@ const char ENEMY = 'E';
 const char TREASURE = 'T';
 const char EMPTY = ' ';
 
-// Función para inicializar el mapa con paredes, espacios vacíos y elementos
+// Function to initialize the map with walls, empty spaces, and elements
 void initializeMap(vector<vector<char>>& map, int size, int numEnemies) {
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
             if (i == 0 || i == size - 1 || j == 0 || j == size - 1) {
-                map[i][j] = WALL;  // Bordes
+                map[i][j] = WALL;  // Borders
             } else {
-                map[i][j] = EMPTY; // Espacios vacíos
+                map[i][j] = EMPTY; // Empty spaces
             }
         }
     }
 
-    // Colocar enemigos de manera aleatoria
+    // Place enemies randomly
     srand(time(0));
     for (int i = 0; i < numEnemies; ++i) {
         int x, y;
@@ -37,7 +37,7 @@ void initializeMap(vector<vector<char>>& map, int size, int numEnemies) {
         map[x][y] = ENEMY;
     }
 
-    // Colocar el tesoro en una posición aleatoria
+    // Place the treasure in a random position
     int tx, ty;
     do {
         tx = rand() % (size - 2) + 1;
@@ -46,7 +46,7 @@ void initializeMap(vector<vector<char>>& map, int size, int numEnemies) {
     map[tx][ty] = TREASURE;
 }
 
-// Función para mostrar el mapa en la consola
+// Function to display the map on the console
 void displayMap(const vector<vector<char>>& map) {
     for (const auto& row : map) {
         for (const auto& cell : row) {
@@ -56,7 +56,7 @@ void displayMap(const vector<vector<char>>& map) {
     }
 }
 
-// Función para mover al jugador y manejar las colisiones con enemigos y el tesoro
+// Function to move the player and handle collisions with enemies and the treasure
 void movePlayer(vector<vector<char>>& map, int& px, int& py, char move, int& health, bool& foundTreasure) {
     int newX = px, newY = py;
 
@@ -66,12 +66,12 @@ void movePlayer(vector<vector<char>>& map, int& px, int& py, char move, int& hea
     else if (move == 'D' || move == 'd') ++newY;
 
     if (map[newX][newY] == WALL) {
-        cout << "¡Chocaste contra una pared!\n";
+        cout << "You hit a wall!\n";
     } else if (map[newX][newY] == ENEMY) {
-        cout << "¡Has encontrado un enemigo! Pierdes 10 de salud.\n";
+        cout << "You encountered an enemy! You lose 10 health points.\n";
         health -= 10;
         if (health <= 0) {
-            cout << "¡Has perdido toda tu salud! Fin del juego.\n";
+            cout << "You lost all your health! Game over.\n";
             exit(0);
         }
         map[px][py] = EMPTY;
@@ -79,7 +79,7 @@ void movePlayer(vector<vector<char>>& map, int& px, int& py, char move, int& hea
         py = newY;
         map[px][py] = PLAYER;
     } else if (map[newX][newY] == TREASURE) {
-        cout << "¡Has encontrado el tesoro!\n";
+        cout << "You found the treasure!\n";
         foundTreasure = true;
     } else {
         map[px][py] = EMPTY;
@@ -90,20 +90,20 @@ void movePlayer(vector<vector<char>>& map, int& px, int& py, char move, int& hea
 }
 
 int main() {
-    // Saludo personalizado
-    string nombre;
-    cout << "Ingrese su nombre: ";
-    cin >> nombre;
-    cout << "HOLA " << nombre << ", EL DÍA DE HOY VAMOS A JUGAR A MAZMORRAS.\n";
-    cout << nombre << " TU TE PUEDES MOVER POR LA CUADRÍCULA CON LAS TECLAS:\n";
-    cout << "W (para moverse hacia arriba)\n";
-    cout << "A (para moverse hacia la izquierda)\n";
-    cout << "S (para moverse hacia abajo)\n";
-    cout << "D (para moverse hacia la derecha)\n";
+    // Personalized greeting
+    string name;
+    cout << "Enter your name: ";
+    cin >> name;
+    cout << "HELLO " << name << ", TODAY WE'RE GOING TO PLAY DUNGEONS.\n";
+    cout << name << " YOU CAN MOVE THROUGH THE GRID USING THE KEYS:\n";
+    cout << "W (to move up)\n";
+    cout << "A (to move left)\n";
+    cout << "S (to move down)\n";
+    cout << "D (to move right)\n";
 
-    // Inicializar el primer mapa
+    // Initialize the first map
     vector<vector<char>> map1(MAP_SIZE_1, vector<char>(MAP_SIZE_1));
-    initializeMap(map1, MAP_SIZE_1, 10);  // 10 enemigos en el primer mapa
+    initializeMap(map1, MAP_SIZE_1, 10);  // 10 enemies on the first map
 
     int playerX = 1, playerY = 1;
     int health = 100;
@@ -111,36 +111,36 @@ int main() {
 
     map1[playerX][playerY] = PLAYER;
 
-    // Juego en el primer mapa
+    // Gameplay on the first map
     while (!foundTreasure) {
         displayMap(map1);
-        cout << "Salud: " << health << endl;
-        cout << "Mover (WASD): ";
+        cout << "Health: " << health << endl;
+        cout << "Move (WASD): ";
         char move;
         cin >> move;
         movePlayer(map1, playerX, playerY, move, health, foundTreasure);
     }
 
-    // Pasar al segundo mapa
+    // Move to the second map
     vector<vector<char>> map2(MAP_SIZE_2, vector<char>(MAP_SIZE_2));
-    initializeMap(map2, MAP_SIZE_2, 20);  // 20 enemigos en el segundo mapa
+    initializeMap(map2, MAP_SIZE_2, 20);  // 20 enemies on the second map
     playerX = 1;
     playerY = 1;
     foundTreasure = false;
 
     map2[playerX][playerY] = PLAYER;
-    cout << "¡Has pasado al segundo nivel!\n";
+    cout << "You have moved to the second level!\n";
 
-    // Juego en el segundo mapa
+    // Gameplay on the second map
     while (!foundTreasure) {
         displayMap(map2);
-        cout << "Salud: " << health << endl;
-        cout << "Mover (WASD): ";
+        cout << "Health: " << health << endl;
+        cout << "Move (WASD): ";
         char move;
         cin >> move;
         movePlayer(map2, playerX, playerY, move, health, foundTreasure);
     }
 
-    cout << "¡Felicidades " << nombre << "! ¡Has ganado el juego!\n";
+    cout << "Congratulations " << name << "! You won the game!\n";
     return 0;
 }
