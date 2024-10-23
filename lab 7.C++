@@ -16,6 +16,7 @@ const char EMPTY = ' ';
 
 // Function to initialize the map with walls, empty spaces, and elements
 void initializeMap(vector<vector<char>>& map, int size, int numEnemies) {
+    // Create external walls
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
             if (i == 0 || i == size - 1 || j == 0 || j == size - 1) {
@@ -26,7 +27,16 @@ void initializeMap(vector<vector<char>>& map, int size, int numEnemies) {
         }
     }
 
-    // Place enemies randomly
+    // Add internal walls, leaving accessible paths
+    for (int i = 2; i < size - 2; i += 4) {
+        for (int j = 2; j < size - 2; j += 4) {
+            map[i][j] = WALL;
+            if (i + 1 < size - 1 && j % 6 == 0) map[i + 1][j] = WALL; // Some vertical walls
+            if (j + 2 < size - 1 && i % 6 == 0) map[i][j + 2] = WALL; // Some horizontal walls
+        }
+    }
+
+    // Randomly place enemies
     srand(time(0));
     for (int i = 0; i < numEnemies; ++i) {
         int x, y;
